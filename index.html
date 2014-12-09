@@ -14,13 +14,14 @@
        An anonymous person wrote:
       {% endif %}
       <blockquote>{{ greeting.content }}</blockquote>
+      Raw: <pre>{{ greeting }}</pre>
     {% endfor %}
 
     <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
-      <div><textarea name="content" rows="3" cols="60"></textarea></div>
+      <div>Content:<textarea name="content" rows="3" cols="60">Content</textarea></div>
+      <div>Question One:<textarea name="question_one" rows="3" cols="60"></textarea></div>
       <div><input type="submit" value="Sign Guestbook"></div>
     </form>
-
     <hr>
 
     <form>Guestbook name:

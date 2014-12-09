@@ -23,12 +23,17 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
     """Constructs a Datastore key for a Guestbook entity with guestbook_name."""
     return ndb.Key('Guestbook', guestbook_name)
 
+class SurveyResponse(ndb.Model):
+    question = ndb.StringProperty(indexed=False)
+    response = ndb.StringProperty(indexed=False)
+
 
 class Greeting(ndb.Model):
     """Models an individual Guestbook entry with author, content, and date."""
     author = ndb.UserProperty()
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
+    survey_responses = ndb.StructuredProperty(SurveyResponse, repeated=True)    
 
 
 class MainPage(webapp2.RequestHandler):
@@ -73,6 +78,7 @@ class Guestbook(webapp2.RequestHandler):
             greeting.author = users.get_current_user()
 
         greeting.content = self.request.get('content')
+        greeting.survey_responses = [SurveyResponse(question='a description for question one', response=self.request.get('question_one'))]
         greeting.put()
 
         query_params = {'guestbook_name': guestbook_name}

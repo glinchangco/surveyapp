@@ -4,3 +4,5 @@ indexes:
   properties:
   - name: date
     direction: desc
+- kind: SurveyResponse
+  ancestor: yes
