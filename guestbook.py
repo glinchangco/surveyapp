@@ -36,6 +36,48 @@ class SurveyResponse(ndb.Model):
     question_responses = ndb.StructuredProperty(QuestionResponse, repeated=True)    
 
 
+class ResultsPage(webapp2.RequestHandler):
+    def get(self):
+        guestbook_name = self.request.get('guestbook_name',
+                                          DEFAULT_GUESTBOOK_NAME)
+        surveys_query = SurveyResponse.query(
+            ancestor=guestbook_key(guestbook_name)).order(-SurveyResponse.date)
+        survey_responses = surveys_query.fetch(10)
+
+        if users.get_current_user():
+            url = users.create_logout_url(self.request.uri)
+            url_linktext = 'Logout'
+        else:
+            url = users.create_login_url(self.request.uri)
+            url_linktext = 'Login'
+
+        QUESTION_NAME = 'Best dog question'
+        result_summary = {
+          QUESTION_NAME: {}
+        }
+        for survey_response in survey_responses:
+            # get this person's response to question 0
+            favorite_resp = survey_response.question_responses[0].response
+            # initialize our counter for this response if we have to
+            if favorite_resp not in result_summary[QUESTION_NAME]:
+                result_summary[QUESTION_NAME][favorite_resp] = 0
+            # increment the counter for this response
+            result_summary[QUESTION_NAME][favorite_resp] += 1
+        # end for
+
+        total_responses = len(survey_responses)
+        template_values = {
+            'total_responses': total_responses,
+            'result_summary': result_summary,
+            'survey_responses': survey_responses,
+            'url': url,
+            'url_linktext': url_linktext,
+            'Frank':"woof"
+        }
+
+        template = JINJA_ENVIRONMENT.get_template('results.html')
+        self.response.write(template.render(template_values))
+
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
@@ -98,5 +140,6 @@ class SurveyResponseHandler(webapp2.RequestHandler):
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/results', ResultsPage),
     ('/sign', SurveyResponseHandler),
 ], debug=True)

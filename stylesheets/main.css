@@ -1,4 +1,7 @@
 body {
+   background-color: "red";
+}
 
- 
+.red-body {
+  background-color: #6495ed;
 }

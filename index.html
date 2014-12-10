@@ -3,24 +3,11 @@
 <html>
   <!-- [START head_html] -->
   <head>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
   </head>
   <!-- [END head_html] -->
   <body>
-    {% for survey_response in survey_responses %}
-      {% if survey_response.author %}
-        <b>{{ survey_response.author.nickname() }}</b> wrote:
-      {% else %}
-       An anonymous person wrote:
-      {% endif %}
-      <h2>Question Response</h2>
-      {% for question_response in survey_response.question_responses %}
-        <h3>{{ question_response.question }}</h2>
-        <p>{{ question_response.response }}</p>
-      {% endfor %}
-      Raw survey response just for debugging: <pre>{{ survey_response }}</pre>
-    {% endfor %}
 
     <!-- HERE IS THE SURVEY -->
     
