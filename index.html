@@ -4,32 +4,125 @@
   <!-- [START head_html] -->
   <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
   </head>
   <!-- [END head_html] -->
   <body>
-    {% for greeting in greetings %}
-      {% if greeting.author %}
-        <b>{{ greeting.author.nickname() }}</b> wrote:
+    {% for survey_response in survey_responses %}
+      {% if survey_response.author %}
+        <b>{{ survey_response.author.nickname() }}</b> wrote:
       {% else %}
        An anonymous person wrote:
       {% endif %}
-      <blockquote>{{ greeting.content }}</blockquote>
-      Raw: <pre>{{ greeting }}</pre>
+      <h2>Question Response</h2>
+      {% for question_response in survey_response.question_responses %}
+        <h3>{{ question_response.question }}</h2>
+        <p>{{ question_response.response }}</p>
+      {% endfor %}
+      Raw survey response just for debugging: <pre>{{ survey_response }}</pre>
     {% endfor %}
 
+    <!-- HERE IS THE SURVEY -->
+    
+    <!--Question 1-->
     <form action="/sign?guestbook_name={{ guestbook_name }}" method="post">
-      <div>Content:<textarea name="content" rows="3" cols="60">Content</textarea></div>
-      <div>Question One:<textarea name="question_one" rows="3" cols="60"></textarea></div>
-      <div><input type="submit" value="Sign Guestbook"></div>
-    </form>
-    <hr>
+      <b>Why are corgis the best dogs?</b><br><textarea name="comment" rows="3" cols="60"></textarea>
+  
+    
+    <!--Question 2-->
+      <P><br>
+      <b>What is the sex of your corgi?</b><br>
+       <input type="radio" name="sex" value="male">Male<br>
+       <input type="radio" name="sex" value="female">Female
+    
+    <!--Question 3-->
+    <p><br>
+    <b>Choose a name for your corgi:</b><br>
+      <select name="corgi_name">
+        <option value="Frank">Frank</option>
+        <option value="JubJub">Jub Jub</option>
+        <option value="MoopMeep">Moop Meep</option>
+      </select>
+  
 
-    <form>Guestbook name:
+    <!--Question 4-->
+    <p><br>
+    <b>Choose Your Favorite Dog Breeds (select all that apply):</b><br> 
+        <input type="checkbox" name="Corgi" id="question1" value="Corgi" />
+        Corgi
+        <input type="checkbox" name="Golden" id="question1" value="Golden" />
+       Golden
+        <input type="checkbox" name="Lab" id="question1" value="Lab" />
+       Lab
+        
+
+    <!--question 5-->
+    <p><fieldset>
+    <b>Please fill out the following:</b><br><br>
+    City:
+    <input name="city" type="text" SIZE=20 MAXLENGTH=30> <br>
+    State:
+    <INPUT NAME="state" TYPE="text" SIZE=20 MAXLENGTH=30><br>
+    County:
+    <INPUT NAME="county" TYPE="text" SIZE=20 MAXLENGTH=30>
+    </fieldset>
+
+
+<!--This is an example of MULTIPLE SELECTIONS-->
+    <p><br>
+    <b>My favourite corgi parts are:</b>
+    <br>To select, click the appropriate choice(s) while holding down the <B>Ctrl</B> (Control) key.<br>
+      <select name="Multi" MULTIPLE SIZE=4>
+        <option>party hats</option>
+        <option>drumsticks</option>
+        <option>bent sasauge</option>
+        <option>wings</option>
+        <option>tots</option>
+      </select>
+
+<!--radio button matrix-->
+
+<p><b>Choose one for each line</b><br>
+<table width="300">
+    <tr>
+        <th></th>
+        <th>1</th>
+        <th>2</th>
+        <th>3</th>
+    </tr>
+    <tr>
+        <td width="300">Twix</td>
+        <td width="100"><input type="radio" name="row-1" data-col="1"></td>
+        <td width="100"><input type="radio" name="row-1" data-col="2"></td>
+        <td width="100"><input type="radio" name="row-1" data-col="3"></td>
+    </tr>
+    <tr>
+        <td>Snickers</td>
+        <td><input type="radio" name="row-2" data-col="1"></td>
+        <td><input type="radio" name="row-2" data-col="2"></td>
+        <td><input type="radio" name="row-2" data-col="3"></td>
+    </tr>
+    <tr>
+        <td>Butterfingers</td>
+        <td><input type="radio" name="row-3" data-col="1"></td>
+        <td><input type="radio" name="row-3" data-col="2"></td>
+        <td><input type="radio" name="row-3" data-col="3"></td>
+    </tr>
+    </table>
+
+
+</fieldset></p>
+
+<P>&nbsp;<P>
+    <center><input type="submit"></form></center>
+
+
+<!--     <form>Guestbook name:
       <input value="{{ guestbook_name }}" name="guestbook_name">
       <input type="submit" value="switch">
     </form>
-
-    <a href="{{ url|safe }}">{{ url_linktext }}</a>
+ -->
+    <a href="{{ url|safe }}">{{ url_linktext }}</a></p>
 
   </body>
 </html>

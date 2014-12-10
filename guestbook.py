@@ -15,7 +15,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 DEFAULT_GUESTBOOK_NAME = 'default_guestbook'
 
 
-# We set a parent key on the 'Greetings' to ensure that they are all in the same
+# We set a parent key on the 'Surveys' to ensure that they are all in the same
 # entity group. Queries across the single entity group will be consistent.
 # However, the write rate should be limited to ~1/second.
 
@@ -23,17 +23,17 @@ def guestbook_key(guestbook_name=DEFAULT_GUESTBOOK_NAME):
     """Constructs a Datastore key for a Guestbook entity with guestbook_name."""
     return ndb.Key('Guestbook', guestbook_name)
 
-class SurveyResponse(ndb.Model):
+class QuestionResponse(ndb.Model):
     question = ndb.StringProperty(indexed=False)
     response = ndb.StringProperty(indexed=False)
 
 
-class Greeting(ndb.Model):
+class SurveyResponse(ndb.Model):
     """Models an individual Guestbook entry with author, content, and date."""
     author = ndb.UserProperty()
     content = ndb.StringProperty(indexed=False)
     date = ndb.DateTimeProperty(auto_now_add=True)
-    survey_responses = ndb.StructuredProperty(SurveyResponse, repeated=True)    
+    question_responses = ndb.StructuredProperty(QuestionResponse, repeated=True)    
 
 
 class MainPage(webapp2.RequestHandler):
@@ -41,9 +41,9 @@ class MainPage(webapp2.RequestHandler):
     def get(self):
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
-        greetings_query = Greeting.query(
-            ancestor=guestbook_key(guestbook_name)).order(-Greeting.date)
-        greetings = greetings_query.fetch(10)
+        surveys_query = SurveyResponse.query(
+            ancestor=guestbook_key(guestbook_name)).order(-SurveyResponse.date)
+        survey_responses = surveys_query.fetch(10)
 
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
@@ -53,7 +53,7 @@ class MainPage(webapp2.RequestHandler):
             url_linktext = 'Login'
 
         template_values = {
-            'greetings': greetings,
+            'survey_responses': survey_responses,
             'guestbook_name': urllib.quote_plus(guestbook_name),
             'url': url,
             'url_linktext': url_linktext,
@@ -63,29 +63,40 @@ class MainPage(webapp2.RequestHandler):
         self.response.write(template.render(template_values))
 
 
-class Guestbook(webapp2.RequestHandler):
+class SurveyResponseHandler(webapp2.RequestHandler):
 
     def post(self):
-        # We set the same parent key on the 'Greeting' to ensure each Greeting
+        # We set the same parent key on the 'Survey' to ensure each Survey
         # is in the same entity group. Queries across the single entity group
         # will be consistent. However, the write rate to a single entity group
         # should be limited to ~1/second.
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
-        greeting = Greeting(parent=guestbook_key(guestbook_name))
+        survey_response = SurveyResponse(parent=guestbook_key(guestbook_name))
 
         if users.get_current_user():
-            greeting.author = users.get_current_user()
+            survey_response.author = users.get_current_user()
 
-        greeting.content = self.request.get('content')
-        greeting.survey_responses = [SurveyResponse(question='a description for question one', response=self.request.get('question_one'))]
-        greeting.put()
+        survey_response.question_responses = [
+          QuestionResponse(
+            question='Best Dogs Response',
+            response=self.request.get('comment')),
+          QuestionResponse(
+            question='sex response',
+            response=self.request.get('sex'))]
 
+
+        # to add a second question
+        # you need to add the question to the UI (index.html)
+        # then save it to the database here
+
+    
+        survey_response.put()
         query_params = {'guestbook_name': guestbook_name}
         self.redirect('/?' + urllib.urlencode(query_params))
 
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/sign', Guestbook),
+    ('/sign', SurveyResponseHandler),
 ], debug=True)
