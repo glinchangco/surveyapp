@@ -40,8 +40,8 @@ class ResultsPage(webapp2.RequestHandler):
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
         surveys_query = SurveyResponse.query(
-            ancestor=guestbook_key(guestbook_name)).order(-SurveyResponse.date)
-        survey_responses = surveys_query.fetch(10)
+            ancestor=guestbook_key(guestbook_name))
+        survey_responses = surveys_query.fetch(100)
 
         #login
         if users.get_current_user():
@@ -101,20 +101,14 @@ class ResultsPage(webapp2.RequestHandler):
 
 
 
-
-
-
-
-
-
 class MainPage(webapp2.RequestHandler):
 
     def get(self):
         guestbook_name = self.request.get('guestbook_name',
                                           DEFAULT_GUESTBOOK_NAME)
         surveys_query = SurveyResponse.query(
-            ancestor=guestbook_key(guestbook_name)).order(-SurveyResponse.date)
-        survey_responses = surveys_query.fetch(10)
+            ancestor=guestbook_key(guestbook_name))
+        survey_responses = surveys_query.fetch(100)
 
         if users.get_current_user():
             url = users.create_logout_url(self.request.uri)
