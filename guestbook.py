@@ -57,18 +57,20 @@ class ResultsPage(webapp2.RequestHandler):
 
         # loop through each responder's survey responses to aggregate # of "x" response
 
+
+
         for survey_response in survey_responses:
-            print "result summary " + str(result_summary)
             for question_response in survey_response.question_responses:
                 question_summary={}
-                if question_response.question + " summary" in result_summary:
-                    question_summary = result_summary[question_response.question+ ' summary']
-                print "question_summary= " + str(question_summary)
+                if question_response.question in result_summary:
+                    question_summary = result_summary[question_response.question]
                 if question_response.response:
                     if question_response.response not in question_summary:
                         question_summary[question_response.response]=0
                     question_summary[question_response.response]+=1
-                result_summary[question_response.question +' summary']=question_summary
+                result_summary[question_response.question]=question_summary
+
+
 
 
 
@@ -84,6 +86,7 @@ class ResultsPage(webapp2.RequestHandler):
 
         total_responses = len(survey_responses)
         template_values = {
+            'question_summary':question_summary,
             'total_responses': total_responses,
             'result_summary': result_summary,
             'survey_responses': survey_responses,
@@ -93,6 +96,16 @@ class ResultsPage(webapp2.RequestHandler):
 
         template = JINJA_ENVIRONMENT.get_template('results.html')
         self.response.write(template.render(template_values))
+
+        # Here's how the controller route and function look:
+
+
+
+
+
+
+
+
 
 class MainPage(webapp2.RequestHandler):
 
@@ -137,47 +150,44 @@ class SurveyResponseHandler(webapp2.RequestHandler):
 
         
 
-        print self.request.get_all("breed")
         survey_response.question_responses = [
           
           #comment box
-          QuestionResponse(
-            question='Best Dogs Response',
-            response=self.request.get('comment')),
+          # QuestionResponse(
+          #   question='Best Dogs Response',
+          #   response=self.request.get('comment')),
           
           #radio button
           QuestionResponse(
-            question='sex response',
+            question='What is the sex of your corgi?',
             response=self.request.get('sex')),
           
           #dropdown
           QuestionResponse(
-            question='corgi name dropdown response',
+            question='Choose a name for your corgi:',
             response=self.request.get('corgi_name')),
-          
-
 
           #checkbox
           QuestionResponse(
-            question='checkbox breed response',
+            question='Choose Your Favorite Dog Breeds (select all that apply):',
             response=self.request.get('breed1')),
           QuestionResponse(
-            question='checkbox breed response',
+            question='Choose Your Favorite Dog Breeds (select all that apply):',
             response=self.request.get('breed2')),
           QuestionResponse(
-            question='checkbox breed response',
-            response=self.request.get('breed3')),
+            question='Choose Your Favorite Dog Breeds (select all that apply):',
+            response=self.request.get('breed3'))
 
-          #multiple textboxes
-          QuestionResponse(
-            question='city response',
-            response=self.request.get('city')),
-          QuestionResponse(
-            question='state response',
-            response=self.request.get('state')),
-          QuestionResponse(
-            question='county response',
-            response=self.request.get('county'))
+          # #multiple textboxes
+          # QuestionResponse(
+          #   question='city response',
+          #   response=self.request.get('city')),
+          # QuestionResponse(
+          #   question='state response',
+          #   response=self.request.get('state')),
+          # QuestionResponse(
+          #   question='county response',
+          #   response=self.request.get('county'))
 
 
           ]
@@ -190,7 +200,7 @@ class SurveyResponseHandler(webapp2.RequestHandler):
     
         survey_response.put()
         query_params = {'guestbook_name': guestbook_name}
-        self.redirect('/?' + urllib.urlencode(query_params))
+        self.redirect('/results')
 
 
 application = webapp2.WSGIApplication([

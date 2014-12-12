@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% autoescape true %}
+
 <html>
   <!-- [START head_html] -->
   <head>
@@ -7,29 +8,37 @@
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
   </head>
   <!-- [END head_html] -->
-  <body>
-    <p>
-      There are {{total_responses}} responses in total
-    </p>
-    RESULTS SUMMARY
-    <pre>
-      {{result_summary}}
-    </pre>
-    {% for survey_response in survey_responses %}
-      {% if survey_response.author %}
-        <b>{{ survey_response.author.nickname() }}</b> wrote:
-      {% else %}
-       An anonymous person wrote:
-      {% endif %}
-      <h2>Question Response</h2>
-      {% for question_response in survey_response.question_responses %}
-        <h3>{{ question_response.question }}</h2>
-        <p>{{ question_response.response }}</p>
+  <body class='container'>
+    <div col-md-9 role='main'>
+
+      <h3>
+        There were {{total_responses}} responses
+      </h3>
+     
+      <p>
+      {% for question in result_summary %}
+         <table class='table table-bordered table-striped'>
+              <thead>
+                {{ question }}
+              </thead>
+              {% for answer in result_summary[question] %}
+              <tr>
+                <th>
+                  {{ answer }}
+                </th>
+                <th>
+                  {{ result_summary[question][answer] }}
+                </th>
+              </tr>
+              {% endfor %}
+        </table>
       {% endfor %}
-      Raw survey response just for debugging: <pre>{{ survey_response }}</pre>
-    {% endfor %}
-  
+    </div>
 
   </body>
 </html>
+
+
+
+
 {% endautoescape %}

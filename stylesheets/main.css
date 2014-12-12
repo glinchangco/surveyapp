@@ -1,6 +1,9 @@
 body {
    background-color: "red";
 }
+.top-buffer {
+	 margin-top:20px;
+}
 
 .red-body {
   background-color: #6495ed;
